@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import OpenAI from "openai";
 
-let openai: OpenAI | null = null;
-const getOpenAI = () => {
-  if (!openai) openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-  return openai;
+let grok: OpenAI | null = null;
+const getGrok = () => {
+  if (!grok)
+    grok = new OpenAI({
+      apiKey: process.env.XAI_API_KEY,
+      baseURL: "https://api.x.ai/v1",
+    });
+  return grok;
 };
 
 type ContentType =
@@ -109,8 +113,8 @@ export const POST = async (req: NextRequest) => {
 
   const startTime = Date.now();
 
-  const completion = await getOpenAI().chat.completions.create({
-    model: "gpt-4o",
+  const completion = await getGrok().chat.completions.create({
+    model: "grok-3-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.75,
     max_tokens: 600,

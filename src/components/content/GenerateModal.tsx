@@ -202,7 +202,7 @@ export const GenerateModal = ({ sourceType, sourceId, onClose }: Props) => {
                   <div className="absolute inset-0 flex items-center justify-center rounded-xl">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-                      <span className="text-xs text-[var(--text-secondary)]">Generating with GPT-4o…</span>
+                      <span className="text-xs text-[var(--text-secondary)]">Generating with Grok…</span>
                     </div>
                   </div>
                 )}

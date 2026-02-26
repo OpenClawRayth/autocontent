@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+let openai: OpenAI | null = null;
+const getOpenAI = () => {
+  if (!openai) openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  return openai;
+};
 
 type ContentType =
   | "listing_description"
@@ -105,7 +109,7 @@ export const POST = async (req: NextRequest) => {
 
   const startTime = Date.now();
 
-  const completion = await openai.chat.completions.create({
+  const completion = await getOpenAI().chat.completions.create({
     model: "gpt-4o",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.75,

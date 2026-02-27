@@ -10,19 +10,19 @@ export default function DashboardPage() {
   const { user, userId, isAdmin } = useAdminUser();
 
   const userData = useQuery(api.users.getUser, { clerkId: userId });
-  const properties = useQuery(
-    isAdmin ? api.properties.listAll : api.properties.list,
-    isAdmin ? {} : { userId }
-  );
-  const vehicles = useQuery(
-    isAdmin ? api.vehicles.listAll : api.vehicles.list,
-    isAdmin ? {} : { userId }
-  );
-  const contentItems = useQuery(
-    isAdmin ? api.content.listAll : api.content.listByUser,
-    isAdmin ? {} : { userId }
-  );
-  const allUsers = useQuery(isAdmin ? api.users.listAll : api.users.listAll, {});
+  const propertiesAll = useQuery(api.properties.listAll, isAdmin ? {} : "skip");
+  const propertiesByUser = useQuery(api.properties.list, !isAdmin ? { userId } : "skip");
+  const properties = isAdmin ? propertiesAll : propertiesByUser;
+
+  const vehiclesAll = useQuery(api.vehicles.listAll, isAdmin ? {} : "skip");
+  const vehiclesByUser = useQuery(api.vehicles.list, !isAdmin ? { userId } : "skip");
+  const vehicles = isAdmin ? vehiclesAll : vehiclesByUser;
+
+  const contentAll = useQuery(api.content.listAll, isAdmin ? {} : "skip");
+  const contentByUser = useQuery(api.content.listByUser, !isAdmin ? { userId } : "skip");
+  const contentItems = isAdmin ? contentAll : contentByUser;
+
+  const allUsers = useQuery(api.users.listAll, isAdmin ? {} : "skip");
 
   const generationsLeft = isAdmin
     ? 99999

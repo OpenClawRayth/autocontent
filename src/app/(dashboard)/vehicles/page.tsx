@@ -26,10 +26,9 @@ const conditionColors: Record<VehicleCondition, string> = {
 
 export default function VehiclesPage() {
   const { userId, isAdmin } = useAdminUser();
-  const vehicles = useQuery(
-    isAdmin ? api.vehicles.listAll : api.vehicles.list,
-    isAdmin ? {} : { userId }
-  );
+  const vehiclesAll = useQuery(api.vehicles.listAll, isAdmin ? {} : "skip");
+  const vehiclesByUser = useQuery(api.vehicles.list, !isAdmin ? { userId } : "skip");
+  const vehicles = isAdmin ? vehiclesAll : vehiclesByUser;
   const createVehicle = useMutation(api.vehicles.create);
   const removeVehicle = useMutation(api.vehicles.remove);
 

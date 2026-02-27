@@ -19,10 +19,9 @@ const statusColors: Record<PropertyStatus, string> = {
 
 export default function PropertiesPage() {
   const { userId, isAdmin } = useAdminUser();
-  const properties = useQuery(
-    isAdmin ? api.properties.listAll : api.properties.list,
-    isAdmin ? {} : { userId }
-  );
+  const propertiesAll = useQuery(api.properties.listAll, isAdmin ? {} : "skip");
+  const propertiesByUser = useQuery(api.properties.list, !isAdmin ? { userId } : "skip");
+  const properties = isAdmin ? propertiesAll : propertiesByUser;
   const createProperty = useMutation(api.properties.create);
   const removeProperty = useMutation(api.properties.remove);
 

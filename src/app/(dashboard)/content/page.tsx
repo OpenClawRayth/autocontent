@@ -30,10 +30,9 @@ const statusBadge: Record<string, string> = {
 
 export default function ContentPage() {
   const { userId, isAdmin } = useAdminUser();
-  const content = useQuery(
-    isAdmin ? api.content.listAll : api.content.listByUser,
-    isAdmin ? {} : { userId }
-  );
+  const contentAll = useQuery(api.content.listAll, isAdmin ? {} : "skip");
+  const contentByUser = useQuery(api.content.listByUser, !isAdmin ? { userId } : "skip");
+  const content = isAdmin ? contentAll : contentByUser;
   const updateStatus = useMutation(api.content.updateStatus);
   const removeContent = useMutation(api.content.remove);
 

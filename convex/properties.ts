@@ -12,6 +12,13 @@ export const list = query({
   },
 });
 
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("properties").order("desc").collect();
+  },
+});
+
 export const get = query({
   args: { id: v.id("properties") },
   handler: async (ctx, args) => ctx.db.get(args.id),

@@ -29,6 +29,13 @@ export const listByUser = query({
   },
 });
 
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("content").order("desc").collect();
+  },
+});
+
 export const listBySource = query({
   args: { sourceId: v.string() },
   handler: async (ctx, args) => {

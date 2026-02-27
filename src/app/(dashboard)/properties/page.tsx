@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { Plus, Home, Trash2, Zap, BedDouble, Bath, Maximize2, DollarSign } from "lucide-react";
+import { Plus, Home, Trash2, Zap, BedDouble, Bath, Maximize2, DollarSign, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GenerateModal } from "@/components/content/GenerateModal";
+import { useAdminUser } from "@/hooks/useAdminUser";
 
 type PropertyStatus = "active" | "pending" | "sold";
 
@@ -18,8 +18,11 @@ const statusColors: Record<PropertyStatus, string> = {
 };
 
 export default function PropertiesPage() {
-  const { user } = useUser();
-  const properties = useQuery(api.properties.list, { userId: user?.id ?? "" });
+  const { userId, isAdmin } = useAdminUser();
+  const properties = useQuery(
+    isAdmin ? api.properties.listAll : api.properties.list,
+    isAdmin ? {} : { userId }
+  );
   const createProperty = useMutation(api.properties.create);
   const removeProperty = useMutation(api.properties.remove);
 
@@ -46,11 +49,10 @@ export default function PropertiesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     setSubmitting(true);
 
     await createProperty({
-      userId: user.id,
+      userId,
       address: form.address,
       city: form.city,
       state: form.state,
@@ -85,8 +87,14 @@ export default function PropertiesPage() {
     <div className="animate-fade-up space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title">Properties</h1>
-          <p className="page-subtitle">{properties?.length ?? 0} listing{properties?.length !== 1 ? "s" : ""}</p>
+          <h1 className="page-title flex items-center gap-2">
+            {isAdmin && <Shield className="w-5 h-5 text-violet-400" />}
+            Properties
+          </h1>
+          <p className="page-subtitle">
+            {properties?.length ?? 0} listing{properties?.length !== 1 ? "s" : ""}
+            {isAdmin && " · all users"}
+          </p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}

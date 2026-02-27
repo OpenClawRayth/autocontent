@@ -102,7 +102,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="text-center px-6 py-24 max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium mb-6">
-          <Zap className="w-3.5 h-3.5" /> Powered by Grok
+          <Zap className="w-3.5 h-3.5" /> Powered by GPT-4o
         </div>
         <h1 className="text-5xl sm:text-6xl font-bold text-white tracking-tight leading-tight mb-6">
           AI content for{" "}

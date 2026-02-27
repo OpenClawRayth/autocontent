@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { Plus, Car, Trash2, Zap, Gauge, DollarSign, Fuel } from "lucide-react";
+import { Plus, Car, Trash2, Zap, Gauge, DollarSign, Fuel, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { GenerateModal } from "@/components/content/GenerateModal";
+import { useAdminUser } from "@/hooks/useAdminUser";
 
 type VehicleStatus = "available" | "pending" | "sold";
 type VehicleCondition = "new" | "used" | "certified";
@@ -25,8 +25,11 @@ const conditionColors: Record<VehicleCondition, string> = {
 };
 
 export default function VehiclesPage() {
-  const { user } = useUser();
-  const vehicles = useQuery(api.vehicles.list, { userId: user?.id ?? "" });
+  const { userId, isAdmin } = useAdminUser();
+  const vehicles = useQuery(
+    isAdmin ? api.vehicles.listAll : api.vehicles.list,
+    isAdmin ? {} : { userId }
+  );
   const createVehicle = useMutation(api.vehicles.create);
   const removeVehicle = useMutation(api.vehicles.remove);
 
@@ -55,11 +58,10 @@ export default function VehiclesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     setSubmitting(true);
 
     await createVehicle({
-      userId: user.id,
+      userId,
       year: Number(form.year),
       make: form.make,
       model: form.model,
@@ -96,8 +98,14 @@ export default function VehiclesPage() {
     <div className="animate-fade-up space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="page-title">Vehicles</h1>
-          <p className="page-subtitle">{vehicles?.length ?? 0} vehicle{vehicles?.length !== 1 ? "s" : ""} in inventory</p>
+          <h1 className="page-title flex items-center gap-2">
+            {isAdmin && <Shield className="w-5 h-5 text-violet-400" />}
+            Vehicles
+          </h1>
+          <p className="page-subtitle">
+            {vehicles?.length ?? 0} vehicle{vehicles?.length !== 1 ? "s" : ""} in inventory
+            {isAdmin && " · all users"}
+          </p>
         </div>
         <button onClick={() => setShowForm(!showForm)} className="btn-primary">
           <Plus className="w-4 h-4" /> Add Vehicle

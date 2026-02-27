@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useUser } from "@clerk/nextjs";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import {
-  FileText, Copy, Check, Trash2, Home, Car,
+  FileText, Copy, Check, Trash2, Home, Car, Shield,
   Instagram, Facebook, Twitter, Mail, MessageSquare, Video, Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdminUser } from "@/hooks/useAdminUser";
 
 const contentTypeIcons: Record<string, React.ElementType> = {
   listing_description: FileText,
@@ -29,8 +29,11 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function ContentPage() {
-  const { user } = useUser();
-  const content = useQuery(api.content.listByUser, { userId: user?.id ?? "" });
+  const { userId, isAdmin } = useAdminUser();
+  const content = useQuery(
+    isAdmin ? api.content.listAll : api.content.listByUser,
+    isAdmin ? {} : { userId }
+  );
   const updateStatus = useMutation(api.content.updateStatus);
   const removeContent = useMutation(api.content.remove);
 
@@ -56,8 +59,14 @@ export default function ContentPage() {
   return (
     <div className="animate-fade-up space-y-6">
       <div>
-        <h1 className="page-title">Content Library</h1>
-        <p className="page-subtitle">{content?.length ?? 0} piece{content?.length !== 1 ? "s" : ""} generated</p>
+        <h1 className="page-title flex items-center gap-2">
+          {isAdmin && <Shield className="w-5 h-5 text-violet-400" />}
+          Content Library
+        </h1>
+        <p className="page-subtitle">
+          {content?.length ?? 0} piece{content?.length !== 1 ? "s" : ""} generated
+          {isAdmin && " · all users"}
+        </p>
       </div>
 
       {/* Filters */}
